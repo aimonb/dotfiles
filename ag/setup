@@ -12,7 +12,7 @@ if ! hash ag 2>/dev/null; then
         if hash brew 1>&2>/dev/null; then
             brew install the_silver_searcher
         elif hash port 1>&2>/dev/null; then
-            port install the_silver_searcher
+            sudo port install the_silver_searcher
         else
             echo "ERROR: I don't know what package manager you're using!"
             exit 1
