@@ -19,6 +19,7 @@ set nowrapscan
 nmap <leader>sw :set wrap!<CR>
 
 inoremap <C-y> <esc>gUiw`]a
+let python_highlight_all = 1
 
 " Press '' quickly in insert mode instead of Esc
 imap ;; <Esc>
