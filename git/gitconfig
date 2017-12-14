@@ -53,6 +53,7 @@
     graft = !legit graft \"$@\"
     list-submodules = config --file .gitmodules --get-regexp path
 	ctags = !.git/hooks/ctags
+	dad = !curl https://icanhazdadjoke.com/ 2> /dev/null && echo
 
 [apply]
     whitespace = strip
@@ -75,11 +76,15 @@
 
 [push]
     default = current
+
 [filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
 	required = true
-	clean = git-lfs clean %f
-	smudge = git-lfs smudge %f
+
 [init]
 	templatedir = ~/.git-template
+
 [user]
 	useConfigOnly = true
