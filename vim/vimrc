@@ -1,3 +1,4 @@
+set encoding=utf-8
 set nocompatible
 filetype plugin indent on
 syntax on
@@ -23,8 +24,10 @@ nmap <leader>sw :set wrap!<CR>
 inoremap <C-y> <esc>gUiw`]a
 let python_highlight_all = 1
 
-" Press '' quickly in insert mode instead of Esc
-imap ;; <Esc>
+" DON'T USE ;; ANYMORE SINCE IT SLOWS DOWN CODING IN JAVASCRIPT
+" AND OTHER LANGUAGES THAT USE SEMICOLONS;
+" " Press '' quickly in insert mode instead of Esc
+" imap ;; <Esc>
 
 " Treat all numerals as decimal even if zero padded
 set nrformats=
@@ -80,7 +83,9 @@ autocmd Filetype yaml setlocal ts=2 sts=2 sw=2
 autocmd Filetype yml setlocal ts=2 sts=2 sw=2
 autocmd Filetype python setlocal ts=4 sts=4 sw=4
 autocmd Filetype sh setlocal ts=4 sts=4 sw=4
+autocmd Filetype groovy setlocal ts=2 sts=2 sw=2
 autocmd Filetype gitconfig setlocal ts=4 sts=4 sw=4
+autocmd BufNewFile,BufRead Dockerfile.* set ft=dockerfile
 
 " Show column rulers
 set colorcolumn=72,80
@@ -88,7 +93,7 @@ set colorcolumn=72,80
 
 " Show whitespace
 set list
-set listchars=tab:\ \ ,trail:.,extends:>,precedes:<
+set listchars=tab:\ \ ,trail:⇢,extends:>,precedes:<
 
 " Customize syntastic plugin
 set statusline+=%#warningmsg#
@@ -99,6 +104,11 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 1
 let g:syntastic_python_flake8_args='--ignore=E402'
+if filereadable(".python3")
+    let g:syntastic_python_python_exec = '/usr/local/bin/python3'
+endif
+let g:syntastic_go_checkers = ['golint', 'govet', 'gofmt']
+let g:go_list_type = 'quickfix'
 
 " NERDTree settings
 " map <C-n> :NERDTreeToggle<CR>
@@ -121,7 +131,7 @@ fun! <SID>StripTrailingWhitespaces()
     call cursor(l, c)
 endfun
 
-autocmd FileType ansible,c,cpp,java,php,ruby,python,sh,vim autocmd BufWritePre
+autocmd FileType ansible,c,groovy,cpp,java,php,ruby,python,sh,vim autocmd BufWritePre
         \ <buffer> :call <SID>StripTrailingWhitespaces()
 
 
@@ -233,7 +243,11 @@ nmap <silent> <leader>g :TestVisit<CR>
 let test#strategy = "tslime"
 
 " Determine the python test runner to use
-if filereadable(".pytest")
+if filereadable("pytest.ini") && filereadable("script/test")
+    let test#python#runner = 'pytest'
+    let test#python#pytest#executable = 'script/test'
+    let test#python#pytest#file_pattern = '_test.py'
+elseif filereadable(".pytest")
     let test#python#runner = 'pytest'
 elseif filereadable(".djangotest")
     let test#python#runner = 'djangotest'
@@ -247,10 +261,11 @@ elseif isdirectory("./libcloud")
 endif
 
 " Pytest options
+" NOTE: Make sure pytest-random-order is installed
 let test#python#pytest#options = {
     \ 'nearest': '--capture=no -v',
-    \ 'file': '--capture=no --random',
-    \ 'suite': '--capture=no --random',
+    \ 'file': '--capture=no',
+    \ 'suite': '--capture=no',
     \}
 " Nose options
 let test#python#nose#options = {
@@ -406,6 +421,9 @@ imap <expr> <f28> XTermPasteBegin("")
 vmap <expr> <f28> XTermPasteBegin("c")
 cmap <f28> <nop>
 cmap <f29> <nop>
+
+" golang
+let g:go_fmt_command = "goimports"
 
 
 " ALWAYS DO THIS LAST
